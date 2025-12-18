@@ -46,11 +46,11 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
             <div className="relative">
-              <i className="fas fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+              <i className="fas fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 z-10"></i>
               <input
                 type="email"
                 required
-                className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                className="w-full pl-10 pr-4 py-3 bg-slate-900 text-white border border-slate-800 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all placeholder:text-slate-500"
                 placeholder="you@university.edu"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -61,11 +61,11 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">Password</label>
             <div className="relative">
-              <i className="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+              <i className="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 z-10"></i>
               <input
                 type="password"
                 required
-                className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                className="w-full pl-10 pr-4 py-3 bg-slate-900 text-white border border-slate-800 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all placeholder:text-slate-500"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

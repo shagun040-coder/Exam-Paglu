@@ -20,24 +20,42 @@ const Dashboard: React.FC = () => {
     }
   }, []);
 
+  // Fix: Added calculateProgress function to resolve the "Cannot find name 'calculateProgress'" error.
+  // This calculates the percentage of completed tasks for a given subject.
   const calculateProgress = (subject: RoadmapResponse) => {
-    const completedIds = progressData[subject.id] || [];
+    const completed = progressData[subject.id] || [];
     if (subject.tasks.length === 0) return 0;
-    return Math.round((completedIds.length / subject.tasks.length) * 100);
+    return Math.round((completed.length / subject.tasks.length) * 100);
   };
 
-  const deleteSubject = (id: string, e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleDeleteSubject = (id: string, e: React.MouseEvent) => {
+    // Stop the click from triggering the parent card's navigation
     e.stopPropagation();
-    if (confirm("Remove this subject and all its progress?")) {
-      const updated = subjects.filter(s => s.id !== id);
-      setSubjects(updated);
-      localStorage.setItem('exampaglu_subjects', JSON.stringify(updated));
+    e.preventDefault();
+    
+    const confirmDelete = window.confirm("Are you sure you want to delete this subject? All your study progress and quiz results for this topic will be permanently removed.");
+    
+    if (confirmDelete) {
+      // 1. Update subjects state and localStorage
+      const updatedSubjects = subjects.filter(s => s.id !== id);
+      setSubjects(updatedSubjects);
+      localStorage.setItem('exampaglu_subjects', JSON.stringify(updatedSubjects));
       
+      // 2. Clean up progress data
       const updatedProgress = { ...progressData };
       delete updatedProgress[id];
       setProgressData(updatedProgress);
       localStorage.setItem('exampaglu_progress', JSON.stringify(updatedProgress));
+
+      // 3. Clean up quiz results
+      const savedQuizResults = localStorage.getItem('exampaglu_quiz_results');
+      if (savedQuizResults) {
+        const quizResults = JSON.parse(savedQuizResults);
+        if (quizResults[id]) {
+          delete quizResults[id];
+          localStorage.setItem('exampaglu_quiz_results', JSON.stringify(quizResults));
+        }
+      }
     }
   };
 
@@ -79,42 +97,48 @@ const Dashboard: React.FC = () => {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {subjects.map((subject) => {
           const progress = calculateProgress(subject);
           return (
             <div 
               key={subject.id}
               onClick={() => navigate(`/roadmap/${subject.id}`)}
-              className="group bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer overflow-hidden flex flex-col"
+              className="group bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer overflow-hidden flex flex-col relative"
             >
+              {/* Delete Button Container - Ensures isolation and proper hit area */}
+              <div className="absolute top-4 right-4 z-20">
+                <button 
+                  type="button"
+                  onClick={(e) => handleDeleteSubject(subject.id, e)}
+                  className="w-10 h-10 bg-white/90 backdrop-blur-md text-slate-400 hover:text-red-600 hover:bg-white transition-all rounded-xl shadow-lg border border-slate-100 flex items-center justify-center group/del"
+                  title="Remove Subject"
+                >
+                  <i className="fa-solid fa-trash-can transition-transform group-hover/del:scale-110"></i>
+                </button>
+              </div>
+
               <div className="aspect-square w-full overflow-hidden bg-slate-100 relative">
                 {subject.coverImage ? (
                   <img 
                     src={subject.coverImage} 
                     alt={subject.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-orange-50 text-orange-200">
                     <i className="fa-solid fa-image text-6xl"></i>
                   </div>
                 )}
-                <div className="absolute top-4 right-4 z-10">
-                  <button 
-                    onClick={(e) => deleteSubject(subject.id, e)}
-                    className="bg-white/90 backdrop-blur-sm text-slate-400 hover:text-red-500 transition-colors p-2 rounded-xl shadow-sm"
-                  >
-                    <i className="fa-solid fa-trash-alt"></i>
-                  </button>
-                </div>
+                {/* Visual Overlay Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
               </div>
               
               <div className="p-6 flex-grow">
                 <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-orange-600 transition-colors line-clamp-1">
                   {subject.title}
                 </h3>
-                <p className="text-slate-500 text-sm line-clamp-2 mb-6">
+                <p className="text-slate-500 text-sm line-clamp-2 mb-6 min-h-[40px]">
                   {subject.summary}
                 </p>
                 
@@ -123,17 +147,17 @@ const Dashboard: React.FC = () => {
                     <span>Progress</span>
                     <span>{progress}%</span>
                   </div>
-                  <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                  <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden shadow-inner">
                     <div 
-                      className="bg-orange-600 h-full transition-all duration-700 ease-out"
+                      className="bg-gradient-to-r from-orange-500 to-orange-600 h-full transition-all duration-1000 ease-out"
                       style={{ width: `${progress}%` }}
                     ></div>
                   </div>
                 </div>
               </div>
               <div className="bg-slate-50 px-6 py-4 border-t border-slate-100 flex justify-between items-center group-hover:bg-orange-50 transition-colors">
-                <span className="text-sm font-semibold text-slate-600 group-hover:text-orange-700">View Roadmap</span>
-                <i className="fa-solid fa-chevron-right text-slate-300 group-hover:text-orange-400"></i>
+                <span className="text-sm font-semibold text-slate-600 group-hover:text-orange-700">Open Roadmap</span>
+                <i className="fa-solid fa-chevron-right text-slate-300 group-hover:text-orange-400 transition-transform group-hover:translate-x-1"></i>
               </div>
             </div>
           );

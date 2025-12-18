@@ -56,6 +56,9 @@ const Quiz: React.FC = () => {
   };
 
   const handleAnswerSelect = (questionId: number, optionIndex: number) => {
+    // Lock the question if it's already answered
+    if (userAnswers[questionId] !== undefined) return;
+    
     setUserAnswers(prev => ({ ...prev, [questionId]: optionIndex }));
   };
 
@@ -156,7 +159,7 @@ const Quiz: React.FC = () => {
             <div className="flex justify-between items-center border-b border-slate-100 pb-6 mb-8">
               <div>
                 <h2 className="text-2xl font-bold text-slate-900 line-clamp-1">{topic}</h2>
-                <p className="text-slate-500 text-sm">Adaptive Session</p>
+                <p className="text-slate-500 text-sm">Adaptive Session • Instant Feedback Enabled</p>
               </div>
               <button 
                 onClick={() => setQuestions([])}
@@ -166,45 +169,80 @@ const Quiz: React.FC = () => {
               </button>
             </div>
 
-            {questions.map((q, qIndex) => (
-              <div key={q.id} className="p-8 bg-slate-50 rounded-3xl border border-slate-100">
-                <h3 className="text-xl font-bold text-slate-800 mb-6 leading-tight">
-                  <span className="text-orange-600 mr-2">Q{qIndex + 1}.</span> {q.question}
-                </h3>
-                <div className="grid grid-cols-1 gap-4">
-                  {q.options.map((opt, oIndex) => (
-                    <label
-                      key={oIndex}
-                      className={`
-                        flex items-center p-5 rounded-2xl border-2 cursor-pointer transition-all select-none
-                        ${userAnswers[q.id] === oIndex 
-                          ? 'bg-orange-600 border-orange-600 text-white shadow-lg shadow-orange-100' 
-                          : 'bg-white border-slate-100 hover:border-orange-200 text-slate-600'}
-                      `}
-                    >
-                      <input
-                        type="radio"
-                        name={`q-${q.id}`}
-                        className="hidden"
-                        checked={userAnswers[q.id] === oIndex}
-                        onChange={() => handleAnswerSelect(q.id, oIndex)}
-                      />
-                      <span className={`w-8 h-8 rounded-lg flex items-center justify-center mr-4 text-sm font-bold transition-colors ${userAnswers[q.id] === oIndex ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-400'}`}>
-                        {String.fromCharCode(65 + oIndex)}
-                      </span>
-                      <span className="font-medium">{opt}</span>
-                    </label>
-                  ))}
+            {questions.map((q, qIndex) => {
+              const isAnswered = userAnswers[q.id] !== undefined;
+              
+              return (
+                <div key={q.id} className="p-8 bg-slate-50 rounded-3xl border border-slate-100">
+                  <h3 className="text-xl font-bold text-slate-800 mb-6 leading-tight">
+                    <span className="text-orange-600 mr-2">Q{qIndex + 1}.</span> {q.question}
+                  </h3>
+                  <div className="grid grid-cols-1 gap-4">
+                    {q.options.map((opt, oIndex) => {
+                      const isSelected = userAnswers[q.id] === oIndex;
+                      const isCorrect = oIndex === q.correctAnswer;
+                      
+                      let containerClass = "flex items-center p-5 rounded-2xl border-2 transition-all select-none ";
+                      let iconClass = "w-8 h-8 rounded-lg flex items-center justify-center mr-4 text-sm font-bold transition-colors ";
+
+                      if (!isAnswered) {
+                        containerClass += "cursor-pointer bg-white border-slate-100 hover:border-orange-200 text-slate-600";
+                        iconClass += "bg-slate-100 text-slate-400";
+                      } else {
+                        containerClass += "cursor-default ";
+                        if (isSelected && isCorrect) {
+                          // Correct Answer Chosen
+                          containerClass += "bg-green-600 border-green-600 text-white shadow-lg shadow-green-100 scale-[1.02]";
+                          iconClass += "bg-green-500 text-white";
+                        } else if (isSelected && !isCorrect) {
+                          // Wrong Answer Chosen
+                          containerClass += "bg-red-600 border-red-600 text-white shadow-lg shadow-red-100 scale-[1.02]";
+                          iconClass += "bg-red-500 text-white";
+                        } else if (isCorrect) {
+                          // The actual correct answer revealed
+                          containerClass += "bg-green-50 border-green-500 text-green-700 border-dashed";
+                          iconClass += "bg-green-500 text-white";
+                        } else {
+                          // Other neutral options
+                          containerClass += "bg-white border-slate-100 text-slate-400 opacity-50";
+                          iconClass += "bg-slate-50 text-slate-300";
+                        }
+                      }
+
+                      return (
+                        <label
+                          key={oIndex}
+                          className={containerClass}
+                        >
+                          <input
+                            type="radio"
+                            name={`q-${q.id}`}
+                            className="hidden"
+                            disabled={isAnswered}
+                            checked={isSelected}
+                            onChange={() => handleAnswerSelect(q.id, oIndex)}
+                          />
+                          <span className={iconClass}>
+                            {isSelected && isCorrect && <i className="fas fa-check"></i>}
+                            {isSelected && !isCorrect && <i className="fas fa-times"></i>}
+                            {!isSelected && isCorrect && isAnswered && <i className="fas fa-check"></i>}
+                            {(!isAnswered || (!isSelected && !isCorrect)) && String.fromCharCode(65 + oIndex)}
+                          </span>
+                          <span className="font-medium">{opt}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             <button
               onClick={handleSubmit}
               disabled={Object.keys(userAnswers).length < questions.length}
               className="w-full bg-orange-600 text-white py-5 rounded-2xl font-bold hover:bg-orange-700 active:scale-[0.98] transition-all disabled:bg-slate-200 shadow-xl shadow-orange-100 text-lg"
             >
-              Submit Results
+              See Final Score
             </button>
           </div>
         )}
