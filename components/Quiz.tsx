@@ -81,7 +81,6 @@ const Quiz: React.FC = () => {
 
     setResult(finalResult);
 
-    // Save using rebranded keys
     if (state?.subjectId && state?.taskId) {
       const allQuizResults = JSON.parse(localStorage.getItem('exampaglu_quiz_results') || '{}');
       if (!allQuizResults[state.subjectId]) {
@@ -93,42 +92,42 @@ const Quiz: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <div className="bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-100">
+    <div className="max-w-4xl mx-auto px-4 py-12 animate-fade-in">
+      <div className="bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-100">
         {!questions.length && !result && (
-          <div className="text-center">
-            <div className="w-20 h-20 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <i className="fas fa-brain text-3xl"></i>
+          <div className="text-center py-6">
+            <div className="w-24 h-24 bg-orange-50 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
+              <i className="fas fa-brain text-4xl"></i>
             </div>
-            <h1 className="text-4xl font-black text-slate-900 mb-4 tracking-tight">Adaptive AI Quizzes</h1>
+            <h1 className="text-4xl font-black text-slate-900 mb-4 tracking-tight">Adaptive Knowledge Quiz</h1>
             <p className="text-slate-500 text-lg mb-12 max-w-lg mx-auto leading-relaxed">
-              Generate custom MCQs for any topic.
+              Generate custom MCQs to test your mastery of any topic.
             </p>
             
-            <div className="space-y-6 max-w-md mx-auto text-left">
+            <div className="space-y-8 max-w-md mx-auto text-left">
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-widest">Topic or Subject</label>
+                <label className="block text-xs font-black text-slate-400 mb-3 uppercase tracking-[0.2em]">Quiz Topic</label>
                 <input
                   type="text"
                   placeholder="e.g. Molecular Biology"
-                  className="w-full p-4 border-2 border-slate-100 rounded-2xl outline-none focus:ring-4 focus:ring-orange-50 focus:border-orange-500 bg-slate-50 transition-all text-slate-700 font-medium"
+                  className="w-full p-5 border-2 border-slate-100 rounded-2xl outline-none focus:ring-4 focus:ring-orange-50 focus:border-orange-500 bg-slate-50 transition-all text-slate-700 font-bold text-lg"
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-widest">Reference Material (Optional)</label>
+                <label className="block text-xs font-black text-slate-400 mb-3 uppercase tracking-[0.2em]">Reference Material</label>
                 <div 
                   onClick={() => fileInputRef.current?.click()}
                   className={`
-                    w-full p-8 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all
+                    w-full p-8 border-2 border-dashed rounded-3xl flex flex-col items-center justify-center cursor-pointer transition-all
                     ${referenceText ? 'bg-orange-50 border-orange-200 text-orange-600' : 'bg-slate-50 border-slate-200 hover:border-orange-300'}
                   `}
                 >
-                  <i className={`fas ${referenceText ? 'fa-file-alt' : 'fa-cloud-upload-alt'} text-3xl mb-3`}></i>
-                  <span className="text-sm font-medium">
-                    {referenceText ? 'Reference material loaded!' : 'Upload past papers (.txt)'}
+                  <i className={`fas ${referenceText ? 'fa-file-circle-check' : 'fa-upload'} text-3xl mb-4`}></i>
+                  <span className="font-bold">
+                    {referenceText ? 'Reference Loaded' : 'Upload Past Papers'}
                   </span>
                   <input
                     type="file"
@@ -143,29 +142,32 @@ const Quiz: React.FC = () => {
               <button
                 onClick={handleStartQuiz}
                 disabled={loading || !topic}
-                className="w-full bg-orange-600 text-white py-5 rounded-2xl font-bold hover:bg-orange-700 active:scale-[0.98] transition-all shadow-xl shadow-orange-100 flex items-center justify-center text-lg mt-4 disabled:bg-slate-300"
+                className="w-full bg-orange-600 text-white py-5 rounded-2xl font-black hover:bg-orange-700 active:scale-[0.98] transition-all shadow-xl shadow-orange-100 flex items-center justify-center text-xl mt-4 disabled:bg-slate-200"
               >
                 {loading ? <i className="fas fa-spinner fa-spin mr-3"></i> : <i className="fas fa-play mr-3"></i>}
-                Start AI Quiz
+                Start Adaptive Quiz
               </button>
             </div>
           </div>
         )}
 
-        {error && <p className="text-red-500 text-center mb-6 font-medium">{error}</p>}
+        {error && <div className="p-5 bg-red-50 text-red-600 rounded-2xl text-center mb-8 font-bold border border-red-100">{error}</div>}
 
         {questions.length > 0 && !result && (
-          <div className="space-y-10 animate-fade-in">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-6 mb-8">
+          <div className="space-y-12 animate-fade-in">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-8">
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 line-clamp-1">{topic}</h2>
-                <p className="text-slate-500 text-sm">Adaptive Session • Instant Feedback Enabled</p>
+                <h2 className="text-3xl font-black text-slate-900 tracking-tight line-clamp-1">{topic}</h2>
+                <div className="flex items-center gap-2 mt-1">
+                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                   <p className="text-slate-500 text-sm font-bold uppercase tracking-wider">Session Active</p>
+                </div>
               </div>
               <button 
                 onClick={() => setQuestions([])}
-                className="text-slate-400 hover:text-red-500 text-sm font-medium"
+                className="text-slate-400 hover:text-red-500 text-sm font-black uppercase tracking-widest transition-colors"
               >
-                Exit Quiz
+                Quit Quiz
               </button>
             </div>
 
@@ -173,47 +175,40 @@ const Quiz: React.FC = () => {
               const isAnswered = userAnswers[q.id] !== undefined;
               
               return (
-                <div key={q.id} className="p-8 bg-slate-50 rounded-3xl border border-slate-100">
-                  <h3 className="text-xl font-bold text-slate-800 mb-6 leading-tight">
-                    <span className="text-orange-600 mr-2">Q{qIndex + 1}.</span> {q.question}
+                <div key={q.id} className="p-10 bg-slate-50 rounded-[2.5rem] border border-slate-100 relative overflow-hidden">
+                  <h3 className="text-2xl font-black text-slate-800 mb-8 leading-tight">
+                    <span className="text-orange-600 mr-3">#{qIndex + 1}</span> {q.question}
                   </h3>
                   <div className="grid grid-cols-1 gap-4">
                     {q.options.map((opt, oIndex) => {
                       const isSelected = userAnswers[q.id] === oIndex;
                       const isCorrect = oIndex === q.correctAnswer;
                       
-                      let containerClass = "flex items-center p-5 rounded-2xl border-2 transition-all select-none ";
-                      let iconClass = "w-8 h-8 rounded-lg flex items-center justify-center mr-4 text-sm font-bold transition-colors ";
+                      let containerClass = "flex items-center p-6 rounded-2xl border-2 transition-all select-none ";
+                      let iconClass = "w-10 h-10 rounded-xl flex items-center justify-center mr-5 text-lg font-black transition-all ";
 
                       if (!isAnswered) {
-                        containerClass += "cursor-pointer bg-white border-slate-100 hover:border-orange-200 text-slate-600";
+                        containerClass += "cursor-pointer bg-white border-slate-100 hover:border-orange-200 hover:shadow-md text-slate-700";
                         iconClass += "bg-slate-100 text-slate-400";
                       } else {
                         containerClass += "cursor-default ";
                         if (isSelected && isCorrect) {
-                          // Correct Answer Chosen
-                          containerClass += "bg-green-600 border-green-600 text-white shadow-lg shadow-green-100 scale-[1.02]";
+                          containerClass += "bg-green-600 border-green-600 text-white shadow-xl shadow-green-100 scale-[1.03]";
                           iconClass += "bg-green-500 text-white";
                         } else if (isSelected && !isCorrect) {
-                          // Wrong Answer Chosen
-                          containerClass += "bg-red-600 border-red-600 text-white shadow-lg shadow-red-100 scale-[1.02]";
+                          containerClass += "bg-red-600 border-red-600 text-white shadow-xl shadow-red-100 scale-[1.03]";
                           iconClass += "bg-red-500 text-white";
                         } else if (isCorrect) {
-                          // The actual correct answer revealed
-                          containerClass += "bg-green-50 border-green-500 text-green-700 border-dashed";
+                          containerClass += "bg-green-50 border-green-500 text-green-800 border-dashed";
                           iconClass += "bg-green-500 text-white";
                         } else {
-                          // Other neutral options
-                          containerClass += "bg-white border-slate-100 text-slate-400 opacity-50";
-                          iconClass += "bg-slate-50 text-slate-300";
+                          containerClass += "bg-white border-slate-100 text-slate-300 opacity-60";
+                          iconClass += "bg-slate-50 text-slate-200";
                         }
                       }
 
                       return (
-                        <label
-                          key={oIndex}
-                          className={containerClass}
-                        >
+                        <label key={oIndex} className={containerClass}>
                           <input
                             type="radio"
                             name={`q-${q.id}`}
@@ -223,12 +218,12 @@ const Quiz: React.FC = () => {
                             onChange={() => handleAnswerSelect(q.id, oIndex)}
                           />
                           <span className={iconClass}>
-                            {isSelected && isCorrect && <i className="fas fa-check"></i>}
-                            {isSelected && !isCorrect && <i className="fas fa-times"></i>}
+                            {isSelected && isCorrect && <i className="fas fa-check-circle"></i>}
+                            {isSelected && !isCorrect && <i className="fas fa-times-circle"></i>}
                             {!isSelected && isCorrect && isAnswered && <i className="fas fa-check"></i>}
                             {(!isAnswered || (!isSelected && !isCorrect)) && String.fromCharCode(65 + oIndex)}
                           </span>
-                          <span className="font-medium">{opt}</span>
+                          <span className="font-bold text-lg">{opt}</span>
                         </label>
                       );
                     })}
@@ -240,40 +235,46 @@ const Quiz: React.FC = () => {
             <button
               onClick={handleSubmit}
               disabled={Object.keys(userAnswers).length < questions.length}
-              className="w-full bg-orange-600 text-white py-5 rounded-2xl font-bold hover:bg-orange-700 active:scale-[0.98] transition-all disabled:bg-slate-200 shadow-xl shadow-orange-100 text-lg"
+              className="w-full bg-orange-600 text-white py-6 rounded-3xl font-black hover:bg-orange-700 active:scale-[0.98] transition-all disabled:bg-slate-200 shadow-2xl shadow-orange-100 text-xl"
             >
-              See Final Score
+              Finish Assessment
             </button>
           </div>
         )}
 
         {result && (
-          <div className="text-center py-16 animate-scale-up">
-            <div className={`inline-flex items-center justify-center w-32 h-32 text-white rounded-[2.5rem] text-4xl font-black mb-8 shadow-2xl ${result.passed ? 'bg-green-500 shadow-green-100' : 'bg-red-500 shadow-red-100'}`}>
+          <div className="text-center py-20 animate-fade-in">
+            <div className={`inline-flex items-center justify-center w-40 h-40 text-white rounded-[3rem] text-5xl font-black mb-10 shadow-2xl ${result.passed ? 'bg-green-500 shadow-green-100' : 'bg-red-500 shadow-red-100'}`}>
               {result.percentage}%
             </div>
-            <h2 className="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
+            <h2 className="text-5xl font-black text-slate-900 mb-6 tracking-tight">
               {result.passed ? 'Excellent Work!' : 'Keep Practicing!'}
             </h2>
-            <p className="text-xl text-slate-500 mb-10">
-              Score: <span className={`font-bold ${result.passed ? 'text-green-600' : 'text-red-500'}`}>{result.score}/{result.total}</span>
+            <p className="text-2xl text-slate-500 mb-12">
+              Score: <span className={`font-black ${result.passed ? 'text-green-600' : 'text-red-500'}`}>{result.score}/{result.total}</span>
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
               {state?.subjectId ? (
                 <button
                   onClick={() => navigate(`/roadmap/${state.subjectId}`)}
-                  className="bg-orange-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-orange-700 transition-all shadow-lg"
+                  className="bg-orange-600 text-white px-12 py-5 rounded-2xl font-black hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 text-lg"
                 >
                   Return to Roadmap
                 </button>
               ) : (
                 <button
                   onClick={() => {setQuestions([]); setResult(null); setTopic('');}}
-                  className="bg-orange-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-orange-700 transition-all shadow-lg"
+                  className="bg-orange-600 text-white px-12 py-5 rounded-2xl font-black hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 text-lg"
                 >
                   New Quiz
                 </button>
               )}
+              <button 
+                onClick={() => navigate('/dashboard')}
+                className="bg-slate-100 text-slate-600 px-12 py-5 rounded-2xl font-bold hover:bg-slate-200 transition-all border border-slate-200 text-lg"
+              >
+                Dashboard
+              </button>
             </div>
           </div>
         )}

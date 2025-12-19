@@ -29,13 +29,13 @@ const AppContent: React.FC = () => {
     return (
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
+          <div className="flex justify-between h-20 items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="bg-orange-600 p-2 rounded-lg">
+              <div className="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-100">
                 <i className="fa-solid fa-graduation-cap text-white text-xl"></i>
               </div>
-              <span className="text-2xl font-black bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-                Exam Paglu
+              <span className="text-2xl font-black text-slate-900 tracking-tight">
+                Exam <span className="text-orange-600">Paglu</span>
               </span>
             </Link>
             
@@ -45,19 +45,19 @@ const AppContent: React.FC = () => {
                   to="/planner" 
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/planner') ? 'text-orange-600 bg-orange-50' : 'text-slate-600 hover:text-orange-600 hover:bg-slate-50'}`}
                 >
-                  <i className="fa-solid fa-plus mr-2"></i>New Plan
+                  <i className="fa-solid fa-plus-circle mr-2"></i>Create Plan
                 </Link>
                 <Link 
                   to="/dashboard" 
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/dashboard') ? 'text-orange-600 bg-orange-50' : 'text-slate-600 hover:text-orange-600 hover:bg-slate-50'}`}
                 >
-                  <i className="fa-solid fa-th-large mr-2"></i>My Subjects
+                  <i className="fa-solid fa-layer-group mr-2"></i>My Subjects
                 </Link>
                 <Link 
                   to="/quiz" 
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/quiz') ? 'text-orange-600 bg-orange-50' : 'text-slate-600 hover:text-orange-600 hover:bg-slate-50'}`}
                 >
-                  <i className="fa-solid fa-brain mr-2"></i>Practice
+                  <i className="fa-solid fa-bolt mr-2"></i>Practice
                 </Link>
                 <button 
                   onClick={handleLogout}
@@ -105,8 +105,10 @@ const AppContent: React.FC = () => {
         </Routes>
       </main>
       
-      <footer className="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-xs">
-        <p>© 2024 Exam Paglu. Dedicated AI Student Companion.</p>
+      <footer className="bg-white border-t border-slate-200 py-8 text-center text-slate-500 text-sm">
+        <div className="flex flex-col items-center gap-2">
+          <p>© 2024 Exam Paglu. Your AI Study Companion.</p>
+        </div>
       </footer>
     </div>
   );
